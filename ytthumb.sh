@@ -1,0 +1,8 @@
+#!/bin/sh
+
+vidId=$(yt-dlp --print id "$1")
+fileName="/tmp/thumbnail-$vidId"
+
+yt-dlp --write-thumbnail --convert-thumbnails jpg --skip-download -o "$fileName" "$1"
+
+xdg-open "$fileName.jpg"

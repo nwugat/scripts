@@ -1,0 +1,8 @@
+#!/usr/bin/env bash
+
+notes_dir=$1
+
+test -d "$notes_dir/.git" || exit 1
+cd "$notes_dir"
+git add .
+git commit -m "Auto-snapshot $(date +'%Y-%m-%d-%H:%M:%S')"
