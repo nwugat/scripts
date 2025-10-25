@@ -1,4 +1,4 @@
-#!/bin/sh
+#!/usr/bin/env bash
 
 combinations() {
     n=$(( 27 * 2 + 10 )) # [A-Z][a-z][0-9], 64 different characters.

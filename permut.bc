@@ -1,4 +1,5 @@
-#!/bin/bc -q
+#!/usr/bin/env bc -q
+
 define F(x) {
 	if(x <= 1) return 1;
 	return (F(x-1)*x);
