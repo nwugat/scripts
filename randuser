@@ -1,4 +1,4 @@
-#!/bin/sh
+#!/usr/bin/env bash
 
 # Small utility for getting randomized user data from randomuser.me through curl
 
