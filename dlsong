@@ -1,0 +1,59 @@
+#!/usr/bin/env sh
+
+is_valid_url() {
+  yt-dlp --quiet --no-warnings --skip-download "$1" >/dev/null 2>&1
+}
+
+get_video_title() {
+  yt-dlp --quiet --no-warnings --print "%(channel)s-%(title)s" "$1" || printf "%s" "unnamed-track"
+}
+
+download() {
+  yt-dlp  -x --embed-metadata --embed-thumbnail --audio-quality best -o "$2.%(ext)s" "$1" >/dev/null 2>&1
+}
+
+format_name() {
+  env tofilename.pl "$@"
+}
+
+custom_name=""
+
+# Parse flags
+while getopts "o:h" opt; do
+  case "$opt" in
+    h) echo "dlsong [-h] [-o custom_file_name] [URL]
+Leave [URL] blank to use URL from clipboard
+-o Use a cutom output file name
+-h Display help"
+      exit 0 ;;
+    o) custom_name="$OPTARG" ;;
+    ?) exit 1 ;;
+  esac
+done
+
+# Shift parsed options away
+shift $((OPTIND - 1))
+
+# Set URL
+url="$1"
+if [ -z "$url" ]; then
+  url="$(wl-paste)" || {
+    echo "Error: URL not provided & clipboard unavailible"
+    exit 1
+  }
+fi
+
+echo "$url"
+
+echo "Attempting to download URL: $url"
+
+is_valid_url "$url" || { echo "Error: bad URL" ; exit 1; }
+
+# Set title
+test -z "$custom_name" && file_name=$(format_name "$(get_video_title "$url")") || file_name="$custom_name"
+
+echo "File name is '$file_name'"
+
+download "$url" "$file_name" || { echo "Error: Download failed " ; exit 1; }
+
+echo "Download succesfull"

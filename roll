@@ -1,0 +1,22 @@
+#!/usr/bin/env bash
+
+# x[1-9]+ times
+# d[1-9]+ dice size
+
+function roll() {
+  local face_count=$1
+  echo "$RANDOM % $face_count + 1" | bc
+}
+
+test -z $(echo $* | tr -d '[:space:]') && roll 6
+
+for cmd in $*; do
+  # echo $roll | tr -d 'xd1-9' | xargs -I{} test -z {} || echo "Error: invalid characters provided" && exit 1
+  face_count=$(echo $cmd | awk '{match($0,/d[0-9]+/);print substr($0,RSTART,RLENGTH)}' | tr -d 'd[:space:]')
+  multiplier=$(echo $cmd | awk '{match($0,/x[0-9]+/);print substr($0,RSTART,RLENGTH)}' | tr -d 'x[:space:]')
+  test $face_count || face_count=6
+  test $multiplier || multiplier=1
+  for i in $(seq 1 $multiplier); do
+    roll $face_count
+  done
+done
