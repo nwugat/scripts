@@ -12,10 +12,6 @@ download() {
   yt-dlp  -x --embed-metadata --embed-thumbnail --audio-quality best -o "$2.%(ext)s" "$1" >/dev/null 2>&1
 }
 
-format_name() {
-  env tofilename.pl "$@"
-}
-
 custom_name=""
 
 # Parse flags
@@ -50,7 +46,7 @@ echo "Attempting to download URL: $url"
 is_valid_url "$url" || { echo "Error: bad URL" ; exit 1; }
 
 # Set title
-test -z "$custom_name" && file_name=$(format_name "$(get_video_title "$url")") || file_name="$custom_name"
+test -z "$custom_name" && file_name=$($HOME/scripts/util/tofilename.pl "$(get_video_title "$url")") || file_name="$custom_name"
 
 echo "File name is '$file_name'"
 
