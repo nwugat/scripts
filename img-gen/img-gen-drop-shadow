@@ -1,0 +1,3 @@
+#!/usr/bin/env sh
+
+magick -size 512x512 xc:none -fill black -draw "circle 256,256 256,50" -blur 0x20 drop_shadow.png

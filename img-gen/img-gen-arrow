@@ -1,0 +1,17 @@
+#!/usr/bin/env sh
+
+tip=30     # tip length (px)
+body=60    # body length (px)
+width=40   # arrow width (px)
+img_w=100
+img_h=$((tip + body + 20))
+
+magick -size ${img_w}x${img_h} xc:none -fill black -stroke none \
+  -draw "polygon \
+    $((img_w/2)),$((10)) \
+    $((img_w/2 + width/2)),$((tip+10)) \
+    $((img_w/2 + 10)),$((tip+10)) \
+    $((img_w/2 + 10)),$((tip+body+10)) \
+    $((img_w/2 - 10)),$((tip+body+10)) \
+    $((img_w/2 - 10)),$((tip+10)) \
+    $((img_w/2 - width/2)),$((tip+10))" arrow.png
