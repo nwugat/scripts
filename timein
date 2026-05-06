@@ -1,4 +1,4 @@
-#!/usr/bin/env bash
+#!/usr/bin/env sh
 
 input="$@"
 timezone=$(timedatectl list-timezones | fzf --query="$input" --select-1 --exit-0)
