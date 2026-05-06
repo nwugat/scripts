@@ -1,3 +1,4 @@
 #!/usr/bin/env sh
 
-lsblk -o NAME,TRAN | awk '$2=="usb" {print "/dev/" $1}' | xargs lsblk -o MOUNTPOINT | tail --lines=+3
+mnt_pts="$(lsblk -o NAME,TRAN | awk '$2=="usb" {print "/dev/" $1}')"
+test -n "$mnt_pts" && { xargs lsblk -o MOUNTPOINT | tail --lines=+3; }
