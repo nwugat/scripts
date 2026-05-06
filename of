@@ -1,5 +1,7 @@
 #!/usr/bin/env sh
 
+# [O]pen a [F]ile under . (resursively) with the specified extension (if provided)
+
 if [ -n "$1" ]; then
   files="$(fd --type file --extension "$1" .)"
 else
