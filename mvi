@@ -1,0 +1,9 @@
+#!/usr/bin/env sh
+
+f="$1"
+
+[ -z "$f" ] &&  { echo "No file specified" >&2; exit 1; }
+
+read -rp "New name: " new_name || exit 0
+
+mv -i "$f" "$new_name"
