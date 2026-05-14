@@ -1,4 +1,186 @@
 #!/usr/bin/env sh
 
-ext_drive_path="/media/external1"
-rsync -av --delete-after --exclude-from='/home/nwugat/rsync-exclude.txt' /home/nwugat/ "$ext_drive_path/home/"
+#TODO implement silent
+
+print_usb_partitions() {
+  mnt_pts="$(lsblk -o NAME,TRAN | awk '$2=="usb" {print "/dev/" $1}')"
+  test -n "$mnt_pts" && { lsblk -o MOUNTPOINT "$mnt_pts" | tail --lines=+3; }
+}
+
+print_help() {
+  cat <<EOF
+  Usage: backup [<OPTS>...]
+
+  Backup up your home directory ($HOME).
+
+  OPTIONS
+    -h|--help
+      Print help and exit.
+    -s|--silent
+      Don't print files changed.
+    -o|--output <target_dir>
+      Manually set the target directory. If not set, script will prompt you to select the mount point of a detected USB partition.
+    -x|--exclude-from <file>
+      Manually set a file containig the list of paths to be ignored (not backed up).
+    -s|--simulate
+      Simulate backup operation (don't write changes). Runs rsync command with --dry-run option.
+    -y|--yes
+      Auto-accept.
+EOF
+}
+
+exclude_list_path="$HOME/backup-exclude.txt"
+output_dir=""
+silent=false
+verbose=false
+yes_flag=false
+simulate=false
+
+# parse opts
+
+while [[ $# -gt 0 ]]; do
+    case "$1" in
+        --silent)
+          silent=true
+          {
+            #TODO remove
+            echo "Option --silent not implemented. Quitting..." >&2
+            exit 1
+          }
+          ;;
+        -h|--help)
+          print_help
+          exit 0
+          ;;
+        -o|--output)
+          [ -d "$2" ] || {
+            printf '%s\n' "Directory '$2' doesn't exist" >&2
+            exit 1
+          }
+          output_dir="$2"
+          shift # extra shift to remove argument
+          ;;
+        --output=*)
+          [ -f "${1#*=}" ] || {
+            printf '%s\n' "File '${1#*=}' doesn't exist" >&2
+            exit 1
+          }
+          output_dir=${1#*=}
+          ;;
+        -s|--simulate) simulate=true ;;
+        -x|--exclude-from)
+          [ -f "$2" ] || {
+            printf '%s\n' "File '$2' doesn't exist" >&2
+            exit 1
+          }
+          exclude_list_path="$2"
+          shift # extra shift to remove argument
+          ;;
+        --exclude-from=*)
+          [ -f "${1#*=}" ] || {
+            printf '%s\n' "File '${1#*=}' doesn't exist" >&2
+            exit 1
+          }
+          exclude_list_path=${1#*=}
+          ;;
+        -y) # auto-accept
+            yes_flag=true
+            ;;
+        --) # don't parse any more options from here onwards
+            break
+            ;;
+        -*)
+            echo "Unknown option: '$1'" >&2
+            exit 1
+            ;;
+        *)
+            echo "Invalid argument: '$1'" >&2
+            exit 1
+            ;;
+    esac
+    shift # remove parsed argument
+done
+
+# select ext drive partition
+
+mapfile -t options < <(print_usb_partitions )
+
+item_index=""
+
+if [ -z "$output_dir" ]; then
+
+  # select a path
+  if [ "${#options[@]}" -eq 0 ]; then
+    printf 'No mountpoint detected\n'
+  elif [ "${#options[@]}" -eq 1 ]; then
+    printf 'One mountpoint mountpoint detected: "%s"\n' "${options[0]}"
+    item_index="0"
+  else
+    printf 'Choose a mountpoint:\n'
+    #${!options[@]} !index @everything: all indexes
+    for i in "${!options[@]}"; do
+      printf '%d) %s\n' "$((i))" "${options[i]}"
+    done
+    printf '> '
+    read -r item_index
+  fi
+
+  # use selected path
+  if [ "$item_index" -ge 0 ] && [ "$item_index" -lt "${#options[@]}" ]; then #${#options[@]} array lenght
+    printf 'Saving copy to directory "%s" (USB mountpoint "%s")\n' "${options[index]}/home" "${options[index]}"
+      output_dir="${options[index]}/home"
+  else
+      printf 'Invalid option\n' >&2
+      exit 1
+  fi
+
+  #TODO
+  # redundant check?
+  if [ -z "$output_dir" ]; then
+      printf 'No mountpoint path set\n' >&2
+      exit 1
+  fi
+
+fi
+
+printf 'Exclude list file to be used: "%s"\n' "$exclude_list_path"
+
+printf '\n'
+
+unset options
+unset item_index
+
+# backup
+
+# proceed confirmation
+
+if ! $yes_flag; then
+
+  proceed=
+
+  while true; do
+    printf 'PROCEED? (y|n): '
+    read -r proceed
+
+    case "$proceed" in
+      y) break ;;
+      n)
+        echo "Backup cancelled" >&2
+        exit 1
+        ;;
+      *)
+        echo "Invalid response, please selecte 'y' or 'n'."
+        ;;
+    esac
+  done
+
+  unset proceed
+
+fi
+
+if $simulate; then
+  echo "SIMULATING BACKUP"
+  rsync --dry-run -av --delete-after --exclude-from="$exclude_list_path" "$HOME/" "$output_dir/"
+else
+  rsync -av --delete-after --exclude-from="$exclude_list_path" "$HOME/"  "$output_dir/"
+fi
