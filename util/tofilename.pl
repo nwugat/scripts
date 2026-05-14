@@ -1,6 +1,6 @@
 #!/usr/bin/env perl
-
 # Format input to be used as a file name
+# I name my files in-kebab-case, and allow spanish characters, everything else I don't use it
 
 use strict;
 use warnings;

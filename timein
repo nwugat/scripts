@@ -1,4 +1,7 @@
 #!/usr/bin/env sh
+# Check what time it is in other regions, useful if you don't want annoy your
+# international buddies with messages at 3AM.
+# Similar in concept to the https://time.in/ website
 
 input="$@"
 timezone=$(timedatectl list-timezones | fzf --query="$input" --select-1 --exit-0)

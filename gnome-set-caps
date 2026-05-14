@@ -1,4 +1,5 @@
 #!/usr/bin/env sh
+# Set behaviour of Caps Lock key in Gnome
 
 opt=""
 

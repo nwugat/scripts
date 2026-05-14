@@ -1,3 +1,4 @@
 #!/usr/bin/env bash
+# To be run at startup
 
 /usr/bin/emacs --daemon

@@ -1,4 +1,5 @@
 #!/usr/bin/env bash
+# Print a random alphanumeric ID
 
 combinations() {
     n=$(( 27 * 2 + 10 )) # [A-Z][a-z][0-9], 64 different characters.

@@ -1,4 +1,6 @@
 #!/bin/sh
+# My earphone are broken :( so I use this to quickly test the volume levels on
+# each side while I adjust them
 
 sox -m \
   "|sox -n -p synth sine 440 vol 1" \

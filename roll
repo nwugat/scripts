@@ -1,7 +1,8 @@
 #!/usr/bin/env bash
-
-# x[1-9]+ times
-# d[1-9]+ dice size
+# Roll a dice
+#   x[1-9]+ times
+#   d[1-9]+ dice size
+#   e.g. x2d6 rolls two D6, d20 rolls one D20
 
 function roll() {
   local face_count=$1

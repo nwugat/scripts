@@ -1,3 +1,4 @@
 #!/usr/bin/env bash
+# Play some relaxing brown noise with SoX
 
 play -c 2 -n synth brownnoise gain -13

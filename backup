@@ -1,4 +1,5 @@
 #!/usr/bin/env sh
+# Back up your $HOME
 
 #TODO implement silent
 

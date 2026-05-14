@@ -1,4 +1,5 @@
 #!/usr/bin/env bc -q
+# Calculate permutations
 
 define F(x) {
 	if(x <= 1) return 1;

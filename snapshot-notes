@@ -1,4 +1,5 @@
 #!/usr/bin/env bash
+# Snapshot my notes
 
 notes_dir=$1
 
