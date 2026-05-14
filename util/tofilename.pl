@@ -1,5 +1,7 @@
 #!/usr/bin/env perl
 
+# Format input to be used as a file name
+
 use strict;
 use warnings;
 use utf8;
@@ -38,7 +40,7 @@ print
     # replace misc symbols
     =~ s/@/at/gr
     # remove other symbols
-    =~ s/[\p{P}\p{S}]//gr
+    # =~ s/[\p{P}\p{S}]//gr #TODO this removes all dashes and dots :(
     # replace all whitespaces with a single dash
     =~ s/[\p{Dash}\s]+/-/gr
 ;
